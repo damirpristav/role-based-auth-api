@@ -1,0 +1,17 @@
+pm.sendRequest('http://localhost:8000/sanctum/csrf-cookie', (error, response) => {
+    let xsrfCookie = response.headers.find(header =>
+        header.key.toLowerCase() === 'set-cookie' &&
+        header.value.includes('XSRF-TOKEN')
+    );
+    if (xsrfCookie) {
+        let xsrfToken = decodeURIComponent(xsrfCookie.value.split(';')[0].split('=')[1]);
+        pm.request.headers.add({
+            key: 'X-XSRF-TOKEN',
+            value: xsrfToken,
+        });
+        pm.request.headers.add({
+            key: 'Referer',
+            value: 'http://localhost',
+        });
+    }
+});
